@@ -16,6 +16,7 @@ services:
       - 27017:27017
     environment:
       - FERRETDB_POSTGRESQL_URL=postgres://postgres:5432/ferretdb
+      - FERRETDB_TELEMETRY=disable
 
   mqtt:
     image: eclipse-mosquitto
