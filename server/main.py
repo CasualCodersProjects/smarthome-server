@@ -5,25 +5,44 @@ import json
 import pymongo
 import arrow
 
+# Database Information and Config
+DATABASE_ADDRESS = "mongodb://localhost:27017/"         # Database IP Address
+DATABASE_NAME = "smarthome"                             # Database Name
+DATABASE_COLLECTION = "data_logs"                       # Collection Name
 
-database = pymongo.MongoClient('mongodb://localhost:27017/')
-db = database["mydatabase"]
-collection = db["mycollection"]
+# MQTT Information and config
+MQTT_HOST = "localhost"                                 # MQTT Broker's IP
+MQTT_PORT = 1883                                        # MQTT broker's port
+# MQTT_TOPIC = "config"         # This will need to change, still a little nebulous. Need many topics likely.
 
-# Set up the connection parameters
-mqtt_host = "localhost"  # Replace with your MQTT broker's IP address or hostname
-mqtt_port = 1883  # Replace with your MQTT broker's port
-mqtt_topic = "test"  # Replace with your MQTT topic
+# Configure Database Structure
+mongo_database = pymongo.MongoClient(DATABASE_ADDRESS)
+mongo_db = mongo_database[DATABASE_NAME]
+mongo_collection = mongo_db[DATABASE_COLLECTION]
 
-def clientcb (client, userdata, msg):
-        data = json.loads(msg.payload)
-        print(data)
-        data["timestamp"] = arrow.utcnow().isoformat()
-        collection.insert_one(data)
+# MQTT Callback for 
+def mqtt_log_callback (client, userdata, msg):
+        # Extract log data from the MQTT Announcement
+        log_data = json.loads(msg.payload)
+        print(log_data)
+        
+        # Adding a mongoDB supported timestamp through Arrow
+        log_data["timestamp"] = arrow.utcnow().isoformat()
+        
+        # Data inserted into database collection.
+        mongo_collection.insert_one(log_data)
 
-client = client.Client()
-client.on_message = clientcb
+# Define the MQTT Client
+mqtt_client = client.Client()
 
-client.connect(mqtt_host, mqtt_port)
-client.subscribe(mqtt_topic)
-client.loop_forever()
+# Callback to handle datalog
+mqtt_client.on_message = mqtt_log_callback
+
+# MQTT Connection
+mqtt_client.connect(MQTT_HOST, MQTT_PORT)
+
+# MQTT Topic Subscription. Again, this will need to change depending on final network structure.
+mqtt_client.subscribe("test")
+
+# Loop forever
+mqtt_client.loop_forever()
