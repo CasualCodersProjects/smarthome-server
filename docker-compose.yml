@@ -1,0 +1,40 @@
+name: "smarthome-server"
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=ferretdb
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  ferretdb:
+    image: ghcr.io/ferretdb/ferretdb
+    restart: on-failure
+    ports:
+      - 27017:27017
+    environment:
+      - FERRETDB_POSTGRESQL_URL=postgres://postgres:5432/ferretdb
+
+  mqtt:
+    image: eclipse-mosquitto
+    restart: on-failure
+    ports:
+      - 1883:1883
+    volumes:
+      - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  server:
+    build: server
+    restart: on-failure
+
+  web:
+    build: frontend
+    restart: on-failure
+    ports:
+      - 3000:3000
+
+networks:
+  default:
+    name: dev
