@@ -2,8 +2,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import type Device from '@/types/device';
+import { DEVICES_COLLECTION, MONGO_DB, MONGO_URI } from '@/constants/env';
 
-const mongo = new MongoClient('mongodb://localhost:27017');
+const mongo = new MongoClient(MONGO_URI);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // allow only GET and OPTIONS requests
@@ -17,8 +18,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   // Use the default database "default" and the collection "devices"
-  const db = mongo.db('default');
-  const collection = db.collection<Device>('devices');
+  const db = mongo.db(MONGO_DB);
+  const collection = db.collection<Device>(DEVICES_COLLECTION);
 
   // Get all devices from the collection
   const devices = await collection.find().toArray();

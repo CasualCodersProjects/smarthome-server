@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import Device, { isValidDevice } from '@/types/device';
-import { formatISO } from 'date-fns';
+import { DEVICES_COLLECTION, MONGO_DB, MONGO_URI } from '@/constants/env';
 
-const mongo = new MongoClient('mongodb://localhost:27017');
+const mongo = new MongoClient(MONGO_URI);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Allow only POST, PUT, and OPTIONS requests
@@ -25,8 +25,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const device: Device = req.body;
 
   // Use the default database "default" and the collection "devices"
-  const db = mongo.db('default');
-  const collection = db.collection<Device>('devices');
+  const db = mongo.db(MONGO_DB);
+  const collection = db.collection<Device>(DEVICES_COLLECTION);
   const query = { name: device.name };
 
   if (!device.updated_at) {

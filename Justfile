@@ -1,3 +1,5 @@
+set dotenv-load
+
 SERVER_IMAGE_NAME := "ghcr.io/casualcodersprojects/smarthome-server-server:main"
 FRONTEND_IMAGE_NAME := "ghcr.io/casualcodersprojects/smarthome-server-web:main"
 
@@ -30,7 +32,13 @@ run-server:
 run-frontend:
   #!/bin/bash
   cd frontend
-  yarn dev
+  PORT=5200 yarn dev
+  cd ..
+
+run-mock:
+  #!/bin/bash
+  cd server
+  python mock_device.py
   cd ..
 
 dev:

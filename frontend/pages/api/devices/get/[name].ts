@@ -2,8 +2,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { MongoClient } from 'mongodb'
 import type Device from '@/types/device'
+import { DEVICES_COLLECTION, MONGO_DB, MONGO_URI } from '@/constants/env'
 
-const mongo = new MongoClient('mongodb://localhost:27017')
+const mongo = new MongoClient(MONGO_URI)
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,8 +24,8 @@ export default async function handler(
 
   // get the device with the specific name from the database
   // use the default database "default" and the collection "devices"
-  const db = mongo.db('default')
-  const collection = db.collection<Device>('devices')
+  const db = mongo.db(MONGO_DB)
+  const collection = db.collection<Device>(DEVICES_COLLECTION)
   const query = { name: name as string }
   const device = await collection.findOne(query)
   if (!device) {
