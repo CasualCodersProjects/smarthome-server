@@ -1,3 +1,3 @@
 services: just run-services
-server: just run-server
+server: sleep 3 && just run-server
 web: just run-frontend
